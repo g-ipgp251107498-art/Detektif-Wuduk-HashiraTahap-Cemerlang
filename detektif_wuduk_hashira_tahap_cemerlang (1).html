@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detektif Wuduk Hashira — Tahap Cemerlang (Simulasi Situasi & KBAT)</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Noto Sans Arabic (Tulisan Jawi Jelas), Plus Jakarta Sans & Cinzel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+Arabic:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        jawi: ['"Noto Sans Arabic"', 'serif'],
+                        anime: ['"Cinzel"', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Latar Belakang Tema Kor Pembasmi Iblis — Markas Detektif Hashira */
+        body {
+            background-color: #050a18;
+            color: #f8fafc;
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(circle at 15% 15%, rgba(0, 229, 255, 0.14) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(244, 63, 94, 0.14) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.06) 0%, transparent 60%);
+        }
+
+        /* Corak Ombak Jepun (Seigaiha) */
+        .pattern-seigaiha {
+            background-color: #0b152c;
+            background-image:
+                radial-gradient(circle at 100% 150%, #0b152c 24%, rgba(0, 229, 255, 0.08) 25%, rgba(0, 229, 255, 0.08) 28%, #0b152c 29%, #0b152c 36%, rgba(0, 229, 255, 0.08) 36%, rgba(0, 229, 255, 0.08) 40%, transparent 40%, transparent),
+                radial-gradient(circle at 0 150%, #0b152c 24%, rgba(0, 229, 255, 0.08) 25%, rgba(0, 229, 255, 0.08) 28%, #0b152c 29%, #0b152c 36%, rgba(0, 229, 255, 0.08) 36%, rgba(0, 229, 255, 0.08) 40%, transparent 40%, transparent);
+            background-size: 40px 20px;
+        }
+
+        /* Corak Petak Haori Tanjiro (Ichimatsu) */
+        .pattern-ichimatsu {
+            background-image:
+                linear-gradient(45deg, rgba(16, 185, 129, 0.14) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(16, 185, 129, 0.14) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(16, 185, 129, 0.14) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(16, 185, 129, 0.14) 75%);
+            background-size: 22px 22px;
+            background-position: 0 0, 0 11px, 11px -11px, -11px 0;
+        }
+
+        .jawi-text {
+            font-family: 'Noto Sans Arabic', serif;
+            direction: rtl;
+            line-height: 1.85;
+        }
+
+        /* Kawalan Mod Tulisan */
+        body.mode-jawi .rumi-only { display: none !important; }
+        body.mode-rumi .jawi-only { display: none !important; }
+
+        /* Gaya Butang 3D Anime RPG */
+        .rpg-btn {
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.55);
+        }
+        .rpg-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+        .rpg-btn:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.55);
+        }
+
+        /* Animasi Watak Chibi Bercakap / Bernafas */
+        @keyframes chibiBreathe {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-6px) scale(1.02); }
+        }
+        .chibi-float {
+            animation: chibiBreathe 3.2s ease-in-out infinite;
+        }
+
+        @keyframes chibiTalk {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-4px) rotate(-1.5deg); }
+            75% { transform: translateY(-2px) rotate(1.5deg); }
+        }
+        .chibi-talking {
+            animation: chibiTalk 0.35s ease-in-out infinite;
+        }
+
+        /* Animasi Kursor Mesin Taip */
+        @keyframes blinkCursor {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .typing-cursor::after {
+            content: '▌';
+            color: #22d3ee;
+            margin-left: 3px;
+            animation: blinkCursor 0.75s infinite;
+        }
+
+        /* Animasi Gegaran Apabila Jawapan Salah atau Masa Tamat */
+        @keyframes shakeScreen {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+        .shake-box {
+            animation: shakeScreen 0.42s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-cyan-400 selection:text-slate-950">
+
+    <!-- Notifikasi Toast (Ganti alert) -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-xs sm:max-w-sm"></div>
+
+    <!-- HEADER UTAMA: MARKAS DETEKTIF HASHIRA -->
+    <header class="sticky top-0 z-40 bg-[#050a18]/95 backdrop-blur-md border-b border-cyan-500/30 shadow-lg">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <!-- Identiti Tahap Cemerlang -->
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-500 via-amber-400 to-cyan-400 p-0.5 shadow-md shadow-rose-500/30 shrink-0">
+                    <div class="w-full h-full bg-[#050a18] rounded-[14px] flex items-center justify-center text-xl">
+                        🔍
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                            Tahap 3 • Cemerlang (Simulasi RPG & KBAT)
+                        </span>
+                        <span class="text-xs text-cyan-300 font-bold hidden sm:inline">Buku Teks Unit 3 • Ms. 98–100</span>
+                    </div>
+                    <h1 class="text-base sm:text-xl font-extrabold text-white tracking-tight mt-0.5 flex items-center gap-2">
+                        <span>Detektif Wuduk Hashira</span>
+                        <span class="jawi-text text-amber-300 text-lg sm:text-xl font-bold hidden md:inline">ديتيكتيف وضوء هاشيرا</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Kawalan Tulisan, Kelajuan Pemasa & Audio -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <!-- Pilihan Kelajuan Pemasa -->
+                <select id="timer-mode-select" onchange="changeTimerSetting()" class="bg-slate-900 border border-slate-700 hover:border-cyan-400 rounded-xl px-2.5 py-2 text-xs font-extrabold text-amber-300 focus:outline-none" title="Tetapan Pemasa Undur">
+                    <option value="25">⏱️ Masa: 25s (Standard)</option>
+                    <option value="15">🔥 Masa: 15s (Pantas Hashira)</option>
+                    <option value="0">🧘 Masa: Santai (Tanpa Had)</option>
+                </select>
+
+                <!-- Penukar Mod Tulisan -->
+                <div class="bg-slate-900 border border-slate-700 rounded-xl p-1 flex items-center text-xs font-extrabold">
+                    <button onclick="setScriptMode('both')" id="mode-both" class="px-2.5 py-1 rounded-lg bg-cyan-500 text-slate-950 transition">Jawi + Rumi</button>
+                    <button onclick="setScriptMode('jawi')" id="mode-jawi" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white transition">Jawi</button>
+                    <button onclick="setScriptMode('rumi')" id="mode-rumi" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white transition">Rumi</button>
+                </div>
+
+                <!-- Butang Muzik Latar Belakang (BGM) -->
+                <button onclick="toggleBGM()" id="btn-bgm" class="p-2 rounded-xl bg-slate-900 border border-emerald-500/50 hover:border-emerald-400 text-emerald-300 transition flex items-center gap-1.5 text-xs font-extrabold" title="Hidupkan / Matikan Lagu Latar Belakang">
+                    <span id="bgm-icon" class="text-base">🎵</span>
+                    <span id="bgm-label" class="hidden sm:inline">Muzik: ON</span>
+                </button>
+
+                <!-- Butang Kesan Bunyi -->
+                <button onclick="toggleSound()" id="btn-sound" class="p-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 text-cyan-300 transition" title="Kesan Bunyi RPG & Pernafasan Air">
+                    <span id="sound-icon" class="text-base">🔊</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- KANDUNGAN UTAMA -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-4 space-y-4">
+
+        <!-- BAR STATUS RPG: NYAWA HATI, SKOR, KOMBO & PANGKAT HASHIRA -->
+        <section class="pattern-seigaiha border border-cyan-500/35 rounded-3xl p-3.5 sm:p-4 shadow-xl">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <!-- Pangkat Hashira & Nombor Kes -->
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <div class="bg-slate-950/90 border border-amber-400/50 px-3.5 py-1.5 rounded-xl flex items-center gap-2">
+                        <span class="text-xs text-slate-400 font-bold">Pangkat:</span>
+                        <span id="rank-badge" class="text-xs sm:text-sm font-extrabold text-amber-300">🌊 Mizunoto (Pelatih)</span>
+                    </div>
+
+                    <div class="bg-slate-950/90 border border-cyan-500/40 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold text-cyan-200">
+                        Fail Kes: <span id="case-counter" class="text-white">1 / 12</span>
+                    </div>
+                </div>
+
+                <!-- Nyawa Hati, Skor & Kombo -->
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <div class="bg-slate-950/90 border border-rose-500/40 px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+                        <span class="text-xs font-extrabold text-slate-300">Nyawa:</span>
+                        <span id="hearts-display" class="text-sm sm:text-base tracking-widest">❤️❤️❤️</span>
+                    </div>
+
+                    <div class="bg-slate-950/90 border border-emerald-500/40 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold text-emerald-300">
+                        Skor: <span id="score-display" class="text-white">0</span>
+                    </div>
+
+                    <div id="combo-pill" class="bg-slate-950/90 border border-purple-500/40 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold text-purple-300">
+                        Kombo: <span id="combo-display" class="text-amber-300">0x</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BAR PEMASA UNDUR (COUNTDOWN TIMER BAR) -->
+            <div id="timer-container" class="mt-3 pt-3 border-t border-slate-800/80">
+                <div class="flex items-center justify-between text-xs font-extrabold mb-1.5">
+                    <span class="text-cyan-300 flex items-center gap-1.5">
+                        <span>⏱️ Masa Siasatan Kes:</span>
+                    </span>
+                    <span id="timer-text" class="text-emerald-300 text-sm font-black">25.0s</span>
+                </div>
+                <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-700 p-0.5">
+                    <div id="timer-bar" class="h-full rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 transition-all duration-100" style="width: 100%;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- SKRIN MULA MISI (INTRO OVERLAY DALAM ARENA)                           -->
+        <!-- ===================================================================== -->
+        <section id="intro-screen" class="pattern-seigaiha border-2 border-cyan-500/40 rounded-3xl p-6 sm:p-10 text-center shadow-2xl relative overflow-hidden">
+            <div class="absolute inset-0 pattern-ichimatsu opacity-25 pointer-events-none"></div>
+            <div class="relative z-10 max-w-2xl mx-auto space-y-5">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-200 text-xs font-extrabold">
+                    <span>⚔️ Misi Khas Kor Pembasmi Iblis</span>
+                    <span>•</span>
+                    <span>12 Fail Kes Siasatan & KBAT</span>
+                </div>
+
+                <h2 class="text-2xl sm:text-4xl font-extrabold text-white leading-tight">
+                    Selamat Datang ke Markas <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-amber-300 to-rose-400">Detektif Wuduk Hashira!</span>
+                </h2>
+
+                <p class="text-xs sm:text-base text-slate-300 leading-relaxed">
+                    Para pelatih Kor Pembasmi Iblis menghadapi pelbagai situasi ketika berwuduk. Sebagai <strong>Detektif Hashira</strong>, teliti laporan dialog mereka sebelum masa tamat dan tentukan sama ada situasi tersebut:
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+                    <div class="bg-slate-900/90 border border-amber-500/40 rounded-2xl p-3.5">
+                        <span class="text-xs font-extrabold text-amber-300 block">⚠️ PERKARA MAKRUH</span>
+                        <p class="text-xs text-slate-300 mt-1">Bercakap, membazir air, dahulukan anggota kiri, minta dibasuhkan tanpa uzur.</p>
+                    </div>
+                    <div class="bg-slate-900/90 border border-rose-500/40 rounded-2xl p-3.5">
+                        <span class="text-xs font-extrabold text-rose-300 block">🚫 BATAL WUDUK</span>
+                        <p class="text-xs text-slate-300 mt-1">Keluar sesuatu dari qubul/dubur, tidur tak tetap punggung, hilang akal, sentuh bukan mahram/qubul.</p>
+                    </div>
+                    <div class="bg-slate-900/90 border border-emerald-500/40 rounded-2xl p-3.5">
+                        <span class="text-xs font-extrabold text-emerald-300 block">✅ SAH / HARUS (KBAT)</span>
+                        <p class="text-xs text-slate-300 mt-1">Sentuh mahram (haram dinikahi), tidur duduk tetap punggung, atau uzur syarie.</p>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button onclick="startMission()" class="rpg-btn px-8 py-4 rounded-2xl bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 text-slate-950 font-extrabold text-sm sm:text-base shadow-xl">
+                        🔍 Mula Siasatan 12 Kes Sekarang!
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- ARENA SIMULASI RPG VISUAL NOVEL (DIALOG WATAK & PILIHAN TINDAKAN)     -->
+        <!-- ===================================================================== -->
+        <section id="rpg-arena" class="hidden space-y-4">
+            
+            <!-- PENTAS WATAK & KOTAK DIALOG MESIN TAIP -->
+            <div id="dialogue-stage" class="pattern-seigaiha border-2 border-cyan-500/40 rounded-3xl p-4 sm:p-6 shadow-2xl relative overflow-hidden">
+                <div class="absolute inset-0 pattern-ichimatsu opacity-20 pointer-events-none"></div>
+
+                <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+                    <!-- Potret Watak Chibi Beranimasi -->
+                    <div class="md:col-span-4 flex flex-col items-center justify-center bg-slate-950/85 border border-cyan-500/30 rounded-2xl p-4 shadow-inner">
+                        <div id="chibi-avatar-wrapper" class="chibi-float">
+                            <!-- SVG Watak Chibi Dijana oleh JS -->
+                        </div>
+                        <div class="mt-3 text-center">
+                            <span id="character-name-tag" class="px-3.5 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-cyan-200 text-xs sm:text-sm font-extrabold">
+                                Tanjiro Kamado
+                            </span>
+                            <p id="case-category-hint" class="text-[11px] text-amber-300 font-bold mt-1.5">
+                                Fail Siasatan #1 • Ujian Pemerhatian
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Kotak Dialog Visual Novel (Kesan Mesin Taip) -->
+                    <div class="md:col-span-8 flex flex-col justify-between space-y-3">
+                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                            <span class="px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-cyan-300 text-xs font-extrabold">
+                                📜 Laporan Situasi Saksi:
+                            </span>
+                            <button onclick="skipTypewriter()" id="btn-skip-text" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold border border-slate-700 transition">
+                                ⏩ Papar Penuh
+                            </button>
+                        </div>
+
+                        <!-- Kotak Teks Dialog -->
+                        <div onclick="skipTypewriter()" class="cursor-pointer bg-slate-950/95 border-2 border-cyan-500/40 rounded-2xl p-4 sm:p-5 min-h-[145px] flex flex-col justify-center space-y-2.5 shadow-inner">
+                            <p id="dialogue-jawi" class="jawi-text jawi-only text-lg sm:text-xl font-bold text-amber-200"></p>
+                            <p id="dialogue-rumi" class="rumi-only text-sm sm:text-lg font-bold text-white leading-relaxed"></p>
+                        </div>
+
+                        <!-- Soalan Detektif -->
+                        <div class="bg-gradient-to-r from-cyan-950/80 to-slate-900 border border-cyan-400/30 rounded-xl px-4 py-2.5 flex items-center gap-2">
+                            <span class="text-lg">🕵️</span>
+                            <p id="detective-question" class="text-xs sm:text-sm font-extrabold text-cyan-200">
+                                Apakah keputusan hukum yang tepat bagi situasi ini?
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PILIHAN TINDAKAN DETEKTIF (ACTION CHOICES) -->
+            <div id="choices-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <!-- Butang pilihan dijana oleh JS -->
+            </div>
+
+            <!-- PANEL ANALISIS FAIL KES & PENJELASAN BUKU TEKS (DIPAPARKAN SELEPAS MENJAWAB) -->
+            <div id="analysis-panel" class="hidden rounded-3xl p-5 sm:p-6 border-2 shadow-2xl space-y-4 transition-all">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <span id="analysis-icon" class="text-3xl">✅</span>
+                        <div>
+                            <h3 id="analysis-title" class="text-lg sm:text-xl font-extrabold text-white">Analisis Tepat!</h3>
+                            <p id="analysis-subtitle" class="text-xs font-bold text-cyan-300">Rujukan Buku Teks Pendidikan Islam Ms. 100</p>
+                        </div>
+                    </div>
+                    <button onclick="nextCase()" id="btn-next-case" class="rpg-btn px-6 py-3 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm shrink-0">
+                        Kes Seterusnya ➡️
+                    </button>
+                </div>
+
+                <div class="bg-slate-950/85 border border-slate-800 rounded-2xl p-4 space-y-2">
+                    <p id="analysis-jawi" class="jawi-text jawi-only text-base sm:text-lg font-bold text-amber-200"></p>
+                    <p id="analysis-explanation" class="text-xs sm:text-sm text-slate-200 leading-relaxed"></p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- SKRIN TAMAT MISI / KEPUTUSAN PANGKAT HASHIRA                          -->
+        <!-- ===================================================================== -->
+        <section id="gameover-screen" class="hidden pattern-seigaiha border-2 border-amber-400/60 rounded-3xl p-6 sm:p-10 text-center shadow-2xl space-y-5">
+            <div id="final-trophy" class="text-6xl">🏆🌊</div>
+            <div class="space-y-2">
+                <span id="final-rank-pill" class="px-4 py-1 rounded-full bg-amber-500/20 border border-amber-400 text-amber-300 text-xs sm:text-sm font-extrabold">
+                    PANGKAT HASHIRA DETEKTIF WUDUK
+                </span>
+                <h2 id="final-heading" class="text-2xl sm:text-4xl font-extrabold text-white">
+                    Siasatan Selesai!
+                </h2>
+                <p id="final-summary" class="text-xs sm:text-base text-slate-300 max-w-xl mx-auto leading-relaxed"></p>
+            </div>
+
+            <!-- Kad Statistik Akhir -->
+            <div class="grid grid-cols-3 gap-3 max-w-lg mx-auto">
+                <div class="bg-slate-950/90 border border-emerald-500/40 rounded-2xl p-3.5">
+                    <div id="stat-correct" class="text-2xl font-black text-emerald-400">12 / 12</div>
+                    <div class="text-[11px] font-bold text-slate-400 mt-0.5">Kes Selesai</div>
+                </div>
+                <div class="bg-slate-950/90 border border-cyan-500/40 rounded-2xl p-3.5">
+                    <div id="stat-score" class="text-2xl font-black text-cyan-400">1200</div>
+                    <div class="text-[11px] font-bold text-slate-400 mt-0.5">Jumlah Skor</div>
+                </div>
+                <div class="bg-slate-950/90 border border-amber-500/40 rounded-2xl p-3.5">
+                    <div id="stat-max-combo" class="text-2xl font-black text-amber-400">12x</div>
+                    <div class="text-[11px] font-bold text-slate-400 mt-0.5">Kombo Tertinggi</div>
+                </div>
+            </div>
+
+            <p class="jawi-text text-xl text-cyan-300 font-bold">
+                مغعملكن وضوء سمڤورنا • ترتيب دالم ملاكوكن عبادة
+            </p>
+
+            <div class="pt-2">
+                <button onclick="startMission()" class="rpg-btn px-7 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-extrabold text-sm sm:text-base">
+                    🔄 Ulang Misi Detektif Hashira
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800/80 bg-[#040814] py-4 px-4 mt-4">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
+            <p>Permainan Interaktif Pendidikan Islam • <span class="text-rose-400 font-bold">Tahap 3: Detektif Wuduk Hashira (Ms. 98–100)</span></p>
+            <p class="jawi-text text-cyan-300 text-sm">مكروه دان ممبطلكن وضوء</p>
+        </div>
+    </footer>
+
+    <!-- LOGIK SIMULASI RPG, DIALOG MESIN TAIP, PEMASA & WEB AUDIO API -->
+    <script>
+        // =========================================================================
+        // 1. PANGKALAN DATA 12 FAIL KES SIASATAN & KBAT (BUKU TEKS MS. 98–100)
+        // =========================================================================
+        const detectiveCases = [
+            // KES 1: MAKRUH - BERCAKAP
+            {
+                id: 1,
+                character: 'Zenitsu Agatsuma',
+                svgType: 'zenitsu',
+                tag: 'Fail Kes #1 • Pemerhatian di Pili Air',
+                rumiDialogue: '“Tadi semasa saya sedang membasuh tangan di pili air, saya rancak berbual dan bergurau dengan rakan di sebelah saya.”',
+                jawiDialogue: 'تادي سماس ساي سدڠ ممباسوه تاڠن، ساي رانچق بربوال دان برڬوراو دڠن راكن دسبله ساي.',
+                question: 'Apakah status wuduk Zenitsu apabila bercakap tanpa keperluan ketika berwuduk?',
+                options: [
+                    { text: 'Makruh ketika berwuduk (wuduk masih sah tetapi mengurangkan pahala)', jawi: 'مكروه كتيك بروضوء', isCorrect: true },
+                    { text: 'Membatalkan wuduk dan wajib mengulangi wuduk dari awal', jawi: 'ممبطلكن وضوء', isCorrect: false },
+                    { text: 'Sunat dilakukan supaya suasana di tempat wuduk lebih ceria', jawi: 'سنة دلاكوكن', isCorrect: false },
+                    { text: 'Wajib menyapu telinga semula sebanyak tiga kali', jawi: 'واجب ممباسوه تليڠا سمولا', isCorrect: false }
+                ],
+                jawiExplain: 'ڤركارا يڠ مكروه كتيك بروضوء: برچاكڤ.',
+                explanation: 'Mengikut Buku Teks halaman 100, bercakap ketika berwuduk tanpa keperluan adalah MAKRUH. Wuduknya tidak batal, namun pahala kesempurnaan wuduk berkurang.'
+            },
+            // KES 2: MAKRUH - BERLEBIHAN AIR
+            {
+                id: 2,
+                character: 'Inosuke Hashibira',
+                svgType: 'inosuke',
+                tag: 'Fail Kes #2 • Penggunaan Air Wuduk',
+                rumiDialogue: '“Saya membuka paip air sehingga melimpah-ruah dengan sangat banyak semasa berkumur dan membasuh muka supaya cepat sejuk!”',
+                jawiDialogue: 'ساي ممبوك ڤاءيڤ اءير سهيڠڬ مليمڤه-رواه دڠن باڽق سماس بركومور دان ممباسوه موك!',
+                question: 'Apakah hukum perbuatan Inosuke membuka paip secara berlebihan ketika berwuduk?',
+                options: [
+                    { text: 'Makruh ketika berwuduk kerana berlebihan menggunakan air', jawi: 'مكروه كران برلبيهن مڠڬوناكن اءير', isCorrect: true },
+                    { text: 'Membatalkan wuduk kerana air terlalu laju', jawi: 'ممبطلكن وضوء', isCorrect: false },
+                    { text: 'Rukun wuduk yang wajib dilakukan oleh setiap murid', jawi: 'روكون وضوء', isCorrect: false },
+                    { text: 'Sunat wuduk untuk menunjukkan semangat yang tinggi', jawi: 'سنة وضوء', isCorrect: false }
+                ],
+                jawiExplain: 'ڤركارا يڠ مكروه كتيك بروضوء: برلبيهن مڠڬوناكن اءير.',
+                explanation: 'Berlebihan menggunakan air (membazir air) ketika berwuduk adalah MAKRUH (Ms. 100). Islam mengajar kita berjimat cermat walaupun menggunakan air sungai yang mengalir.'
+            },
+            // KES 3: MAKRUH - MENDAHULUKAN ANGGOTA KIRI
+            {
+                id: 3,
+                character: 'Tanjiro Kamado',
+                svgType: 'tanjiro',
+                tag: 'Fail Kes #3 • Cara Basuhan Anggota',
+                rumiDialogue: '“Saya tersilap langkah tadi; saya membasuh tangan kiri hingga ke siku dahulu, barulah saya membasuh tangan kanan hingga ke siku.”',
+                jawiDialogue: 'ساي ترسيلڤ لڠكه تادي؛ ساي ممباسوه تاڠن كيري دهولو، باروله تاڠن كانن.',
+                question: 'Apakah hukum mendahulukan anggota kiri berbanding anggota kanan semasa berwuduk?',
+                options: [
+                    { text: 'Makruh ketika berwuduk (wuduk sah, tetapi meninggalkan sunat kanan)', jawi: 'مكروه كتيك بروضوء', isCorrect: true },
+                    { text: 'Batal wuduk kerana melanggar rukun Tertib', jawi: 'بطل وضوء كران ترتيب', isCorrect: false },
+                    { text: 'Haram dan berdosa besar jika dilakukan dengan sengaja', jawi: 'حرام دان بردوسا', isCorrect: false },
+                    { text: 'Sunat wuduk bagi mereka yang menulis dengan tangan kiri', jawi: 'سنة وضوء', isCorrect: false }
+                ],
+                jawiExplain: 'ڤركارا يڠ مكروه كتيك بروضوء: مندهولوكن اڠڬوتا كيري.',
+                explanation: 'Mendahulukan anggota kiri ketika membasuh tangan dan kaki adalah MAKRUH (Ms. 100), kerana sunat wuduk ialah memulakan basuhan dengan anggota sebelah kanan (مولاءي يڠ كانن).'
+            },
+            // KES 4: MAKRUH - MEMINTA ORANG LAIN MEMBASUHKAN TANPA KEUZURAN
+            {
+                id: 4,
+                character: 'Tengen Uzui',
+                svgType: 'tengen',
+                tag: 'Fail Kes #4 • Bantuan Tanpa Keuzuran',
+                rumiDialogue: '“Tangan saya sihat walafiat dan tidak sakit langsung, tetapi saya meminta pelatih lain menjiruskan air dan menggosokkan muka serta lengan saya.”',
+                jawiDialogue: 'تاڠن ساي صيحت، تتاڤي ساي ممينتا ڤلاتيه لاءين ممباسوهكن موك دان لڠن ساي.',
+                question: 'Apakah hukum meminta orang lain membasuhkan anggota wuduk tanpa sebarang keuzuran?',
+                options: [
+                    { text: 'Makruh ketika berwuduk', jawi: 'مكروه كتيك بروضوء', isCorrect: true },
+                    { text: 'Membatalkan wuduk serta-merta', jawi: 'ممبطلكن وضوء', isCorrect: false },
+                    { text: 'Sunat dilakukan untuk mengeratkan silaturahim', jawi: 'سنة دلاكوكن', isCorrect: false },
+                    { text: 'Wajib dilakukan oleh ketua pasukan', jawi: 'واجب دلاكوكن', isCorrect: false }
+                ],
+                jawiExplain: 'ڤركارا يڠ مكروه كتيك بروضوء: ممينتا اورڠ لاءين ممباسوهكن اڠڬوتا وضوء تنڤا كعذورن.',
+                explanation: 'Meminta orang lain membasuhkan anggota wuduk tanpa keuzuran adalah MAKRUH (Ms. 100), kerana ibadah wuduk sebaiknya dilakukan sendiri dengan penuh tawaduk.'
+            },
+            // KES 5: BATAL WUDUK - KELUAR SESUATU QUBUL & DUBUR
+            {
+                id: 5,
+                character: 'Inosuke Hashibira',
+                svgType: 'inosuke',
+                tag: 'Fail Kes #5 • Kejadian Sebelum Solat',
+                rumiDialogue: '“Saya sudah selesai berwuduk dengan sempurna. Semasa berjalan masuk ke dalam surau, tiba-tiba saya terkentut!”',
+                jawiDialogue: 'ساي سوده سلساي بروضوء سمڤورنا، تيبا-تيبا ساي تركنتوت سماس برجالن ماسوق كسوراو!',
+                question: 'Bagaimanakah status wuduk Inosuke selepas terkentut?',
+                options: [
+                    { text: 'Batal wuduk kerana keluar sesuatu daripada qubul dan dubur', jawi: 'بطل وضوء كران كلوار سسواتو درڤد قُبُل دان دوبور', isCorrect: true },
+                    { text: 'Makruh sahaja, boleh terus menunaikan solat', jawi: 'مكروه سهاج', isCorrect: false },
+                    { text: 'Wuduk masih sah jika bunyi kentut tidak kedengaran', jawi: 'وضوء ماسيه صح', isCorrect: false },
+                    { text: 'Cukup sekadar membasuh kaki semula tanpa niat', jawi: 'چوكوڤ ممباسوه كاكي سمولا', isCorrect: false }
+                ],
+                jawiExplain: 'ڤركارا يڠ ممبطلكن وضوء: كلوار سسواتو درڤد قُبُل دان دوبور.',
+                explanation: 'Keluar sesuatu daripada qubul dan dubur (seperti angin/kentut, air kencing, atau najis) MEMBATALKAN WUDUK (Ms. 100). Inosuke wajib mengambil wuduk semula.'
+            },
+            // KES 6: BATAL WUDUK - TIDUR TIDAK TETAP PUNGGUNG
+            {
+                id: 6,
+                character: 'Zenitsu Agatsuma',
+                svgType: 'zenitsu',
+                tag: 'Fail Kes #6 • Menunggu Waktu Solat',
+                rumiDialogue: '“Selepas berwuduk, saya terlalu letih lalu tertidur lena sambil berbaring mengiring di tepi dinding surau sehingga azan berkumandang.”',
+                jawiDialogue: 'سلڤس بروضوء، ساي ترتيدور لينا سمبيل برباريڠ مڠيريڠ دتڤي دينديڠ سوراو.',
+                question: 'Apakah keputusan hukum bagi wuduk Zenitsu yang tertidur sambil berbaring?',
+                options: [
+                    { text: 'Batal wuduk kerana tidur yang tidak tetap punggung', jawi: 'بطل وضوء كران تيدور يڠ تيدق تتڤ ڤوڠڬوڠ', isCorrect: true },
+                    { text: 'Makruh sahaja kerana tidur di dalam surau', jawi: 'مكروه سهاج', isCorrect: false },
+                    { text: 'Wuduk masih sah jika tidur kurang daripada 10 minit', jawi: 'وضوء ماسيه صح', isCorrect: false },
+                    { text: 'Sunat menyapu kepala sahaja sebelum solat', jawi: 'سنة مڽاڤو كڤالا سهاج', isCorrect: false }
+                ],
+                jawiExplain: 'ڤركارا يڠ ممبطلكن وضوء: تيدور يڠ تيدق تتڤ ڤوڠڬوڠ.',
+                explanation: 'Tidur yang tidak tetap punggung (seperti tidur berbaring atau mengiring) MEMBATALKAN WUDUK (Ms. 100) kerana dikhuatiri keluar angin tanpa disedari.'
+            },
+            // KES 7: BATAL WUDUK - HILANG AKAL
+            {
+                id: 7,
+                character: 'Kyojuro Rengoku',
+                svgType: 'rengoku',
+                tag: 'Fail Kes #7 • Laporan Kesihatan Pelatih',
+                rumiDialogue: '“Seorang pelatih baru sahaja selesai berwuduk, namun akibat cuaca terlalu panas, dia tiba-tiba pitam dan pengsan tidak sedarkan diri!”',
+                jawiDialogue: 'سأورڠ ڤلاتيه سلساي بروضوء، نامون دي تيبا-تيبا ڤيتم دان ڤڠسن تيدق سدركن ديري!',
+                question: 'Apakah kesan pitam atau pengsan terhadap wuduk pelatih tersebut?',
+                options: [
+                    { text: 'Batal wuduk kerana hilang akal (seperti mabuk atau pengsan)', jawi: 'بطل وضوء كران هيلڠ عقل سڤرتي مابوق اتاو ڤيتم', isCorrect: true },
+                    { text: 'Wuduk kekal sah sebaik sahaja dia sedar semula', jawi: 'وضوء ككل صح', isCorrect: false },
+                    { text: 'Makruh sahaja kerana berlaku tanpa sengaja', jawi: 'مكروه سهاج', isCorrect: false },
+                    { text: 'Sunat membasuh muka semula tanpa berniat', jawi: 'سنة ممباسوه موك سمولا', isCorrect: false }
+                ],
+                jawiExplain: 'ڤركارا يڠ ممبطلكن وضوء: هيلڠ عقل سڤرتي مابوق اتاو ڤيتم.',
+                explanation: 'Hilang akal seperti mabuk, pitam, pengsan, atau gila adalah antara 5 perkara yang MEMBATALKAN WUDUK (Ms. 100).'
+            },
+            // KES 8: BATAL WUDUK - BERSENTUH KULIT BUKAN MAHRAM
+            {
+                id: 8,
+                character: 'Tanjiro Kamado',
+                svgType: 'tanjiro',
+                tag: 'Fail Kes #8 • Pergaulan & Batas Wuduk',
+                rumiDialogue: '“Selepas berwuduk, seorang murid lelaki secara tidak sengaja bersentuh kulit tapak tangan dengan rakan perempuan sekelasnya (bukan mahram) tanpa lapik.”',
+                jawiDialogue: 'سلڤس بروضوء، سأورڠ موريد للاكي برسنتوه كوليت تاڤق تاڠن دڠن راكن ڤرمڤوان بوكن مَحْرَم تنڤا لاڤيق.',
+                question: 'Apakah hukum sentuhan kulit antara lelaki dan perempuan yang bukan mahram selepas berwuduk?',
+                options: [
+                    { text: 'Batal wuduk kerana bersentuh kulit lelaki dan perempuan yang bukan mahram', jawi: 'بطل وضوء كران برسنتوه كوليت للاكي دان ڤرمڤوان يڠ بوكن مَحْرَم', isCorrect: true },
+                    { text: 'Tidak batal kerana bersentuh secara tidak sengaja', jawi: 'تيدق بطل', isCorrect: false },
+                    { text: 'Makruh sahaja jika tidak berjabat tangan', jawi: 'مكروه سهاج', isCorrect: false },
+                    { text: 'Wuduk sah kerana mereka rakan sekelas', jawi: 'وضوء صح', isCorrect: false }
+                ],
+                jawiExplain: 'ڤركارا يڠ ممبطلكن وضوء: برسنتوه كوليت للاكي دان ڤرمڤوان يڠ بوكن مَحْرَم.',
+                explanation: 'Bersentuh kulit antara lelaki dan perempuan yang bukan mahram tanpa lapik MEMBATALKAN WUDUK (Ms. 100), sama ada sengaja atau tidak sengaja.'
+            },
+            // KES 9: BATAL WUDUK - MENYENTUH QUBUL ATAU DUBUR DENGAN TAPAK TANGAN
+            {
+                id: 9,
+                character: 'Giyu Tomioka',
+                svgType: 'giyu',
+                tag: 'Fail Kes #9 • Siasatan Anggota Badan',
+                rumiDialogue: '“Ketika membetulkan kain setelah selesai berwuduk, seorang pelatih tersentuh bahagian qubulnya secara langsung menggunakan bahagian dalam tapak tangannya.”',
+                jawiDialogue: 'كتيك ممبتولكن كاءين سلڤس بروضوء، سأورڠ ڤلاتيه ترسنتوه بهاڬين قُبُلڽ دڠن تاڤق تاڠن.',
+                question: 'Apakah status wuduk pelatih tersebut selepas menyentuh qubul dengan tapak tangan?',
+                options: [
+                    { text: 'Batal wuduk kerana menyentuh qubul atau dubur dengan tapak tangan', jawi: 'بطل وضوء كران مڽنتوه قُبُل اتاو دوبور دڠن تاڤق تاڠن', isCorrect: true },
+                    { text: 'Makruh sahaja kerana tersentuh tanpa niat', jawi: 'مكروه سهاج', isCorrect: false },
+                    { text: 'Wuduk masih sah jika membasuh tangan dengan sabun', jawi: 'وضوء ماسيه صح', isCorrect: false },
+                    { text: 'Sunat mengulangi basuhan tangan hingga ke siku', jawi: 'سنة ممباسوه تاڠن', isCorrect: false }
+                ],
+                jawiExplain: 'ڤركارا يڠ ممبطلكن وضوء: مڽنتوه قُبُل اتاو دوبور دڠن تاڤق تاڠن.',
+                explanation: 'Menyentuh qubul atau dubur dengan tapak tangan tanpa lapik adalah salah satu perkara yang MEMBATALKAN WUDUK (Ms. 100).'
+            },
+            // KES 10: KBAT - MAHRAM VS BUKAN MAHRAM
+            {
+                id: 10,
+                character: 'Tanjiro Kamado',
+                svgType: 'tanjiro',
+                tag: 'Fail Kes #10 • Ujian KBAT Konsep Mahram',
+                rumiDialogue: '“Sebelum pergi ke surau, saya bersalam dan mencium tangan ibu kandung saya selepas mengambil wuduk. Adakah wuduk saya terbatal?”',
+                jawiDialogue: 'سبلوم كسوراو، ساي برسالم دان منچيوم تاڠن ايبو كاندوڠ ساي سلڤس مڠمبيل وضوء.',
+                question: 'Berdasarkan info buku teks halaman 100 mengenai maksud MAHRAM, apakah status wuduk Tanjiro?',
+                options: [
+                    { text: 'Wuduk SAH — Ibu adalah mahram (orang yang haram kita bernikah dengannya)', jawi: 'وضوء صح — مَحْرَم اياله اورڠ يڠ حرام كيت برنكاح دڠنڽ', isCorrect: true },
+                    { text: 'Batal wuduk kerana bersentuh kulit lelaki dan perempuan', jawi: 'بطل وضوء', isCorrect: false },
+                    { text: 'Makruh bersalam selepas mengambil wuduk', jawi: 'مكروه برسالم', isCorrect: false },
+                    { text: 'Wajib menyapu muka semula sebelum solat', jawi: 'واجب مڽاڤو موك سمولا', isCorrect: false }
+                ],
+                jawiExplain: 'اينفو: مَحْرَم اياله اورڠ يڠ حرام كيت برنكاح دڠنڽ.',
+                explanation: 'KBAT: Bersentuh kulit hanya membatalkan wuduk jika melibatkan BUKAN MAHRAM. Ibu kandung, adik-beradik kandung, dan ibu saudara adalah MAHRAM (orang yang haram kita bernikah dengannya), maka wuduk kekal SAH!'
+            },
+            // KES 11: KBAT - BANTUAN KETIKA KEUZURAN SYARIE
+            {
+                id: 11,
+                character: 'Giyu Tomioka',
+                svgType: 'giyu',
+                tag: 'Fail Kes #11 • Ujian KBAT Keuzuran',
+                rumiDialogue: '“Tangan kanan saya patah dan berbalut simen akibat kemalangan, lalu saya meminta rakan membantu meratakan air wuduk pada muka dan tangan kiri saya.”',
+                jawiDialogue: 'تاڠن كانن ساي ڤاته دان بربالوت سيمين، لالو ساي ممينتا راكن ممبنتو ممباسوهكن اڠڬوتا وضوء ساي.',
+                question: 'Apakah hukum meminta bantuan orang lain membasuhkan anggota wuduk ketika mengalami keuzuran?',
+                options: [
+                    { text: 'Diharuskan dan tidak makruh kerana mempunyai keuzuran syarie', jawi: 'دهاروسكن دان تيدق مكروه كران كعذورن', isCorrect: true },
+                    { text: 'Tetap makruh walaupun tangan sedang patah', jawi: 'تتڤ مكروه', isCorrect: false },
+                    { text: 'Membatalkan wuduk kerana orang lain menyentuh anggota wuduk', jawi: 'ممبطلكن وضوء', isCorrect: false },
+                    { text: 'Tidak sah wuduk selagi balutan simen tidak dibuka', jawi: 'تيدق صح وضوء', isCorrect: false }
+                ],
+                jawiExplain: 'ممينتا اورڠ لاءين ممباسوهكن اڠڬوتا وضوء تنڤا كعذورن اداله مكروه.',
+                explanation: 'KBAT: Perbuatan meminta orang lain membasuhkan anggota wuduk hanya menjadi makruh apabila dilakukan TANPA KEUZURAN (Ms. 100). Jika uzur seperti sakit atau patah tangan, ia diharuskan dan wuduknya sah!'
+            },
+            // KES 12: KBAT - TIDUR DUDUK TETAP PUNGGUNG VS TIDAK TETAP PUNGGUNG
+            {
+                id: 12,
+                character: 'Kyojuro Rengoku',
+                svgType: 'rengoku',
+                tag: 'Fail Kes #12 • Ujian KBAT Posisi Tidur',
+                rumiDialogue: '“Semasa mendengar kuliah Subuh, seorang jemaah terlelap seketika dalam keadaan duduk bersila dengan punggungnya tetap rapat di atas lantai masjid.”',
+                jawiDialogue: 'سأورڠ جماعه ترليلڤ سكتيك دالم كأداءن دودوق برسيلا دڠن ڤوڠڬوڠڽ تتڤ راڤت دأتس لنتاي.',
+                question: 'Teliti syarat batal wuduk di halaman 100 (“tidur yang tidak tetap punggung”). Apakah status wuduk jemaah ini?',
+                options: [
+                    { text: 'Wuduk masih SAH kerana tidur dalam keadaan tetap punggung', jawi: 'وضوء ماسيه صح كران تيدور تتڤ ڤوڠڬوڠ', isCorrect: true },
+                    { text: 'Batal wuduk serta-merta walaupun punggung tetap di lantai', jawi: 'بطل وضوء سرتا-مرتا', isCorrect: false },
+                    { text: 'Makruh mendengar kuliah selepas berwuduk', jawi: 'مكروه مندڠر كوليه', isCorrect: false },
+                    { text: 'Batal wuduk kerana memejamkan mata di dalam masjid', jawi: 'بطل وضوء كران ممجمكن مات', isCorrect: false }
+                ],
+                jawiExplain: 'ڤركارا يڠ ممبطلكن وضوء: تيدور يڠ تيدق تتڤ ڤوڠڬوڠ.',
+                explanation: 'KBAT: Perkara yang membatalkan wuduk ialah tidur yang TIDAK TETAP PUNGGUNG (Ms. 100). Jika seseorang terlelap dalam keadaan duduk yang tetap punggungnya di atas lantai, wuduknya tidak batal.'
+            }
+        ];
+
+        // =========================================================================
+        // 2. ILUSTRASI WATAK CHIBI DEMON SLAYER (SVG VEKTOR DETEKTIF)
+        // =========================================================================
+        function getDetectiveChibiSVG(svgType) {
+            const avatars = {
+                tanjiro: `<svg class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl shadow-lg" viewBox="0 0 120 120" fill="none">
+                    <rect width="120" height="120" rx="20" fill="#064e3b"/>
+                    <circle cx="60" cy="58" r="46" fill="#10b981" opacity="0.25"/>
+                    <path d="M26 116 C28 86 42 78 60 78 C78 78 92 86 94 116 Z" fill="#10b981" stroke="#047857" stroke-width="2"/>
+                    <rect x="36" y="88" width="10" height="10" fill="#0f172a"/>
+                    <rect x="46" y="98" width="10" height="10" fill="#0f172a"/>
+                    <rect x="66" y="88" width="10" height="10" fill="#0f172a"/>
+                    <rect x="76" y="98" width="10" height="10" fill="#0f172a"/>
+                    <circle cx="60" cy="48" r="23" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+                    <rect x="34" y="55" width="5" height="9" rx="1" fill="#ffffff" stroke="#dc2626" stroke-width="1"/>
+                    <path d="M35 48 C34 24 48 18 60 20 C72 18 86 24 85 48 L76 36 L66 40 L56 34 L44 40 Z" fill="#7f1d1d" stroke="#450a0a" stroke-width="1.5"/>
+                    <path d="M44 37 L48 39 L45 42" stroke="#991b1b" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="51" cy="50" r="3.5" fill="#7f1d1d"/>
+                    <circle cx="69" cy="50" r="3.5" fill="#7f1d1d"/>
+                    <path d="M55 60 Q60 64 65 60" stroke="#9a3412" stroke-width="2" stroke-linecap="round"/>
+                </svg>`,
+
+                zenitsu: `<svg class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl shadow-lg" viewBox="0 0 120 120" fill="none">
+                    <rect width="120" height="120" rx="20" fill="#78350f"/>
+                    <circle cx="60" cy="58" r="46" fill="#facc15" opacity="0.22"/>
+                    <path d="M26 116 C28 86 42 78 60 78 C78 78 92 86 94 116 Z" fill="#facc15" stroke="#ca8a04" stroke-width="2"/>
+                    <polygon points="42,95 48,86 54,95" fill="#ffffff"/>
+                    <polygon points="68,98 74,89 80,98" fill="#ffffff"/>
+                    <circle cx="60" cy="48" r="23" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+                    <path d="M34 50 C32 26 46 18 60 18 C74 18 88 26 86 50 L82 42 L76 48 L68 36 L60 46 L52 36 L44 48 L38 42 Z" fill="#fbbf24" stroke="#d97706" stroke-width="1.5"/>
+                    <circle cx="51" cy="51" r="3.5" fill="#b45309"/>
+                    <circle cx="69" cy="51" r="3.5" fill="#b45309"/>
+                    <path d="M55 61 Q60 58 65 61" stroke="#9a3412" stroke-width="2" stroke-linecap="round"/>
+                </svg>`,
+
+                inosuke: `<svg class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl shadow-lg" viewBox="0 0 120 120" fill="none">
+                    <rect width="120" height="120" rx="20" fill="#3b0764"/>
+                    <circle cx="60" cy="58" r="46" fill="#a855f7" opacity="0.22"/>
+                    <path d="M28 116 C32 86 44 78 60 78 C76 78 88 86 92 116 Z" fill="#fed7aa" stroke="#fb923c" stroke-width="2"/>
+                    <ellipse cx="60" cy="50" rx="25" ry="23" fill="#a8a29e" stroke="#57534e" stroke-width="2"/>
+                    <polygon points="38,34 33,22 46,28" fill="#78716c"/>
+                    <polygon points="82,34 87,22 74,28" fill="#78716c"/>
+                    <circle cx="49" cy="47" r="4.5" fill="#38bdf8" stroke="#1e293b" stroke-width="1.5"/>
+                    <circle cx="71" cy="47" r="4.5" fill="#38bdf8" stroke="#1e293b" stroke-width="1.5"/>
+                    <ellipse cx="60" cy="58" rx="9" ry="6.5" fill="#fda4af" stroke="#e11d48" stroke-width="1.5"/>
+                    <circle cx="57" cy="58" r="1.5" fill="#881337"/>
+                    <circle cx="63" cy="58" r="1.5" fill="#881337"/>
+                </svg>`,
+
+                rengoku: `<svg class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl shadow-lg" viewBox="0 0 120 120" fill="none">
+                    <rect width="120" height="120" rx="20" fill="#7f1d1d"/>
+                    <circle cx="60" cy="58" r="46" fill="#f97316" opacity="0.25"/>
+                    <path d="M24 116 C28 86 42 78 60 78 C78 78 92 86 96 116 Z" fill="#ffffff" stroke="#ef4444" stroke-width="2"/>
+                    <path d="M48 78 L60 92 L72 78 Z" fill="#1e293b"/>
+                    <circle cx="60" cy="48" r="23" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+                    <path d="M33 48 L28 36 L38 34 L36 22 L48 24 L54 14 L60 22 L66 14 L72 24 L84 22 L82 34 L92 36 L87 48 L80 40 L72 44 L60 36 L48 44 L40 40 Z" fill="#facc15" stroke="#dc2626" stroke-width="1.8"/>
+                    <circle cx="51" cy="51" r="3.5" fill="#dc2626"/>
+                    <circle cx="69" cy="51" r="3.5" fill="#dc2626"/>
+                    <path d="M54 60 Q60 65 66 60" stroke="#9a3412" stroke-width="2" stroke-linecap="round"/>
+                </svg>`,
+
+                giyu: `<svg class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl shadow-lg" viewBox="0 0 120 120" fill="none">
+                    <rect width="120" height="120" rx="20" fill="#0c4a6e"/>
+                    <circle cx="60" cy="58" r="46" fill="#38bdf8" opacity="0.22"/>
+                    <path d="M26 116 C28 86 42 78 60 78 L60 116 Z" fill="#881337"/>
+                    <path d="M60 78 C78 78 92 86 94 116 L60 116 Z" fill="#10b981"/>
+                    <polygon points="66,92 74,86 82,92 74,98" fill="#facc15"/>
+                    <circle cx="60" cy="48" r="23" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+                    <path d="M33 50 L29 36 L38 30 L42 18 L54 22 L62 16 L70 22 L82 20 L86 34 L90 48 L80 38 L66 42 L54 36 L42 42 Z" fill="#0f172a"/>
+                    <circle cx="51" cy="50" r="3.5" fill="#1d4ed8"/>
+                    <circle cx="69" cy="50" r="3.5" fill="#1d4ed8"/>
+                    <line x1="55" y1="61" x2="65" y2="61" stroke="#9a3412" stroke-width="2" stroke-linecap="round"/>
+                </svg>`,
+
+                tengen: `<svg class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl shadow-lg" viewBox="0 0 120 120" fill="none">
+                    <rect width="120" height="120" rx="20" fill="#1e1b4b"/>
+                    <circle cx="60" cy="58" r="46" fill="#ec4899" opacity="0.22"/>
+                    <path d="M28 116 C30 86 44 78 60 78 C76 78 90 86 92 116 Z" fill="#1e293b"/>
+                    <rect x="31" y="92" width="11" height="4" rx="2" fill="#facc15"/>
+                    <rect x="78" y="92" width="11" height="4" rx="2" fill="#facc15"/>
+                    <circle cx="60" cy="48" r="23" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+                    <path d="M36 46 C36 24 84 24 84 46 L78 36 L60 34 L42 36 Z" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+                    <rect x="38" y="34" width="44" height="7" rx="3" fill="#cbd5e1" stroke="#64748b" stroke-width="1.2"/>
+                    <circle cx="50" cy="37.5" r="2.5" fill="#ec4899"/>
+                    <circle cx="60" cy="37.5" r="3" fill="#ec4899"/>
+                    <circle cx="70" cy="37.5" r="2.5" fill="#ec4899"/>
+                    <circle cx="51" cy="50" r="3.5" fill="#be185d"/>
+                    <circle cx="69" cy="50" r="3.5" fill="#be185d"/>
+                    <path d="M55 60 Q60 64 65 60" stroke="#9a3412" stroke-width="2" stroke-linecap="round"/>
+                </svg>`
+            };
+            return avatars[svgType] || avatars.tanjiro;
+        }
+
+        // =========================================================================
+        // 3. PENJANA BUNYI SINTESIS WEB AUDIO API, LAGU LATAR (BGM) & TOAST
+        // =========================================================================
+        let soundEnabled = true;
+        let bgmEnabled = true;
+        let sharedAudioCtx = null;
+        let bgmInterval = null;
+        let bgmStep = 0;
+
+        // Konteks Audio Bersepadu untuk Lagu Latar & Kesan Bunyi RPG
+        function getAudioContext() {
+            if (!sharedAudioCtx) {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                sharedAudioCtx = new AudioCtx();
+            }
+            if (sharedAudioCtx.state === 'suspended') {
+                sharedAudioCtx.resume();
+            }
+            return sharedAudioCtx;
+        }
+
+        // Melodi Latar Belakang Gaya Detektif Hashira (Skala Pentatonik Jepun Misteri & Tenang)
+        const detectiveBgmNotes = [
+            220.00, // A3
+            261.63, // C4
+            293.66, // D4
+            329.63, // E4
+            392.00, // G4
+            329.63, // E4
+            293.66, // D4
+            261.63, // C4
+            220.00, // A3
+            196.00, // G3
+            220.00, // A3
+            293.66, // D4
+            329.63, // E4
+            440.00, // A4
+            392.00, // G4
+            329.63  // E4
+        ];
+
+        function playSingleBGMNote() {
+            if (!bgmEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const freq = detectiveBgmNotes[bgmStep % detectiveBgmNotes.length];
+                const stepMod = bgmStep % 4;
+                bgmStep++;
+
+                // Nada melodi utama lembut (seperti alat muzik Koto/Marimba)
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.042, now + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.72);
+
+                osc.start(now);
+                osc.stop(now + 0.75);
+
+                // Nada bass latar lembut pada setiap ketukan pertama (stepMod === 0)
+                if (stepMod === 0) {
+                    const bassOsc = ctx.createOscillator();
+                    const bassGain = ctx.createGain();
+                    bassOsc.connect(bassGain);
+                    bassGain.connect(ctx.destination);
+
+                    bassOsc.type = 'triangle';
+                    bassOsc.frequency.setValueAtTime(110.00, now); // A2
+
+                    bassGain.gain.setValueAtTime(0.001, now);
+                    bassGain.gain.linearRampToValueAtTime(0.03, now + 0.08);
+                    bassGain.gain.exponentialRampToValueAtTime(0.0008, now + 1.1);
+
+                    bassOsc.start(now);
+                    bassOsc.stop(now + 1.15);
+                }
+            } catch (e) {}
+        }
+
+        function startBGM() {
+            if (bgmInterval) return;
+            bgmInterval = setInterval(() => {
+                if (bgmEnabled && sharedAudioCtx && sharedAudioCtx.state === 'running') {
+                    playSingleBGMNote();
+                }
+            }, 540);
+        }
+
+        function toggleBGM() {
+            bgmEnabled = !bgmEnabled;
+            const icon = document.getElementById('bgm-icon');
+            const label = document.getElementById('bgm-label');
+            const btn = document.getElementById('btn-bgm');
+
+            if (bgmEnabled) {
+                getAudioContext();
+                startBGM();
+                playSingleBGMNote();
+                icon.textContent = '🎵';
+                label.textContent = 'Muzik: ON';
+                btn.className = 'p-2 rounded-xl bg-slate-900 border border-emerald-500/50 hover:border-emerald-400 text-emerald-300 transition flex items-center gap-1.5 text-xs font-extrabold';
+                showToast('🎵 Lagu latar belakang detektif dihidupkan', 'info');
+            } else {
+                icon.textContent = '🔇';
+                label.textContent = 'Muzik: OFF';
+                btn.className = 'p-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-400 transition flex items-center gap-1.5 text-xs font-extrabold';
+                showToast('🔇 Lagu latar belakang dimatikan', 'info');
+            }
+        }
+
+        // Hidupkan lagu latar secara automatik sebaik sahaja pemain menyentuh/klik skrin
+        document.addEventListener('pointerdown', () => {
+            if (bgmEnabled) {
+                getAudioContext();
+                startBGM();
+            }
+        }, { once: true });
+
+        function playRPGAudio(type) {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+
+                if (type === 'tick') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(750, now);
+                    gain.gain.setValueAtTime(0.03, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                    osc.start(now);
+                    osc.stop(now + 0.04);
+                } else if (type === 'correct') {
+                    // Melodi Teknik Pernafasan Air Tepat!
+                    [587.33, 783.99, 1046.50, 1318.51].forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.07);
+                        gain.gain.setValueAtTime(0.16, now + i * 0.07);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.32);
+                        osc.start(now + i * 0.07);
+                        osc.stop(now + i * 0.07 + 0.32);
+                    });
+                } else if (type === 'wrong') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(195, now);
+                    osc.frequency.linearRampToValueAtTime(125, now + 0.28);
+                    gain.gain.setValueAtTime(0.16, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'warn') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(880, now);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                } else if (type === 'victory') {
+                    [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.1);
+                        gain.gain.setValueAtTime(0.18, now + i * 0.1);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.45);
+                        osc.start(now + i * 0.1);
+                        osc.stop(now + i * 0.1 + 0.45);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-icon').textContent = soundEnabled ? '🔊' : '🔇';
+            if (soundEnabled) playRPGAudio('tick');
+            showToast(soundEnabled ? '🔊 Kesan bunyi RPG diaktifkan' : '🔇 Kesan bunyi dimatikan', 'info');
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const style = type === 'success'
+                ? 'bg-emerald-950/95 border-emerald-400 text-emerald-200'
+                : type === 'error'
+                ? 'bg-rose-950/95 border-rose-400 text-rose-200'
+                : 'bg-slate-900/95 border-cyan-400 text-cyan-200';
+
+            toast.className = `pointer-events-auto px-4 py-2.5 rounded-xl border ${style} shadow-xl text-xs sm:text-sm font-extrabold backdrop-blur-md transition-all duration-300 transform translate-y-2 opacity-0`;
+            toast.textContent = msg;
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 2300);
+        }
+
+        // =========================================================================
+        // 4. STATE SIMULASI RPG, MESIN TAIP & BAR PEMASA UNDUR
+        // =========================================================================
+        let currentCaseIndex = 0;
+        let lives = 3;
+        let score = 0;
+        let combo = 0;
+        let maxCombo = 0;
+        let correctCount = 0;
+        let caseAnswered = false;
+
+        // Pemasa Undur
+        let maxTimeSeconds = 25;
+        let timeLeft = 25;
+        let timerInterval = null;
+
+        // Kesan Mesin Taip (Typewriter)
+        let typewriterInterval = null;
+        let fullRumiText = '';
+        let fullJawiText = '';
+        let isTyping = false;
+
+        function setScriptMode(mode) {
+            document.body.classList.remove('mode-jawi', 'mode-rumi');
+            if (mode === 'jawi') document.body.classList.add('mode-jawi');
+            if (mode === 'rumi') document.body.classList.add('mode-rumi');
+
+            ['both', 'jawi', 'rumi'].forEach(m => {
+                const btn = document.getElementById(`mode-${m}`);
+                btn.className = m === mode
+                    ? 'px-2.5 py-1 rounded-lg bg-cyan-500 text-slate-950 transition'
+                    : 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white transition';
+            });
+            playRPGAudio('tick');
+        }
+
+        function changeTimerSetting() {
+            const val = parseInt(document.getElementById('timer-mode-select').value, 10);
+            maxTimeSeconds = val;
+            if (val === 0) {
+                document.getElementById('timer-container').classList.add('opacity-50');
+                document.getElementById('timer-text').textContent = 'Tanpa Had Masa';
+                document.getElementById('timer-bar').style.width = '100%';
+                clearInterval(timerInterval);
+            } else {
+                document.getElementById('timer-container').classList.remove('opacity-50');
+                if (!caseAnswered && !document.getElementById('rpg-arena').classList.contains('hidden')) {
+                    startCaseTimer();
+                }
+            }
+        }
+
+        function updateHUD() {
+            // 3 Nyawa Hati
+            let hearts = '';
+            for (let i = 0; i < 3; i++) {
+                hearts += i < lives ? '❤️' : '🖤';
+            }
+            document.getElementById('hearts-display').textContent = hearts;
+            document.getElementById('score-display').textContent = score;
+            document.getElementById('combo-display').textContent = `${combo}x`;
+            document.getElementById('case-counter').textContent = `${Math.min(currentCaseIndex + 1, detectiveCases.length)} / ${detectiveCases.length}`;
+
+            // Kemaskini Pangkat Hashira berdasarkan Skor
+            const rankBadge = document.getElementById('rank-badge');
+            if (score >= 900) {
+                rankBadge.textContent = '👑 Hashira Detektif Wuduk (Mizu Hashira)';
+                rankBadge.className = 'text-xs sm:text-sm font-extrabold text-amber-300';
+            } else if (score >= 500) {
+                rankBadge.textContent = '⚔️ Kinoe (Penyiasat Kanan)';
+                rankBadge.className = 'text-xs sm:text-sm font-extrabold text-cyan-300';
+            } else if (score >= 200) {
+                rankBadge.textContent = '💧 Tsuchinoto (Detektif Muda)';
+                rankBadge.className = 'text-xs sm:text-sm font-extrabold text-emerald-300';
+            } else {
+                rankBadge.textContent = '🌊 Mizunoto (Pelatih)';
+                rankBadge.className = 'text-xs sm:text-sm font-extrabold text-slate-200';
+            }
+        }
+
+        function startMission() {
+            if (bgmEnabled) {
+                getAudioContext();
+                startBGM();
+            }
+            currentCaseIndex = 0;
+            lives = 3;
+            score = 0;
+            combo = 0;
+            maxCombo = 0;
+            correctCount = 0;
+            maxTimeSeconds = parseInt(document.getElementById('timer-mode-select').value, 10);
+
+            document.getElementById('intro-screen').classList.add('hidden');
+            document.getElementById('gameover-screen').classList.add('hidden');
+            document.getElementById('rpg-arena').classList.remove('hidden');
+
+            updateHUD();
+            loadCase(0);
+        }
+
+        function loadCase(index) {
+            clearInterval(timerInterval);
+            clearInterval(typewriterInterval);
+
+            currentCaseIndex = index;
+            caseAnswered = false;
+            updateHUD();
+
+            const c = detectiveCases[index];
+
+            // Papar Watak & Fail Kes
+            document.getElementById('chibi-avatar-wrapper').innerHTML = getDetectiveChibiSVG(c.svgType);
+            document.getElementById('chibi-avatar-wrapper').className = 'chibi-talking';
+            document.getElementById('character-name-tag').textContent = c.character;
+            document.getElementById('case-category-hint').textContent = c.tag;
+            document.getElementById('detective-question').textContent = c.question;
+
+            // Sembunyikan panel analisis sebelumnya
+            document.getElementById('analysis-panel').classList.add('hidden');
+
+            // Mulakan Kesan Mesin Taip (Typewriter Effect)
+            fullRumiText = c.rumiDialogue;
+            fullJawiText = c.jawiDialogue;
+            startTypewriter(fullRumiText, fullJawiText);
+
+            // Jana Pilihan Tindakan Detektif (dikocok secara rawak)
+            const shuffledOptions = [...c.options].sort(() => Math.random() - 0.5);
+            const choicesGrid = document.getElementById('choices-grid');
+            choicesGrid.innerHTML = shuffledOptions.map((opt, idx) => `
+                <button onclick="submitChoice(${idx}, ${opt.isCorrect})" id="choice-btn-${idx}"
+                    class="rpg-btn cursor-pointer bg-slate-900/95 hover:bg-cyan-950/60 border-2 border-slate-700 hover:border-cyan-400 rounded-2xl p-4 text-left flex items-center gap-3.5 transition-all">
+                    <span class="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 font-black text-sm flex items-center justify-center shrink-0">
+                        ${String.fromCharCode(65 + idx)}
+                    </span>
+                    <div class="min-w-0 flex-1">
+                        <p class="jawi-text jawi-only text-base sm:text-lg font-extrabold text-amber-200">${opt.jawi}</p>
+                        <p class="rumi-only text-xs sm:text-sm font-bold text-white leading-snug">${opt.text}</p>
+                    </div>
+                </button>
+            `).join('');
+
+            // Mulakan Bar Pemasa Undur
+            startCaseTimer();
+        }
+
+        function startTypewriter(rumiStr, jawiStr) {
+            const rumiEl = document.getElementById('dialogue-rumi');
+            const jawiEl = document.getElementById('dialogue-jawi');
+            const skipBtn = document.getElementById('btn-skip-text');
+
+            rumiEl.textContent = '';
+            jawiEl.textContent = jawiStr;
+            rumiEl.classList.add('typing-cursor');
+            skipBtn.classList.remove('hidden');
+            isTyping = true;
+
+            let charIdx = 0;
+            typewriterInterval = setInterval(() => {
+                if (charIdx < rumiStr.length) {
+                    rumiEl.textContent += rumiStr.charAt(charIdx);
+                    if (charIdx % 4 === 0) playRPGAudio('tick');
+                    charIdx++;
+                } else {
+                    finishTypewriter();
+                }
+            }, 22);
+        }
+
+        function skipTypewriter() {
+            if (!isTyping) return;
+            finishTypewriter();
+        }
+
+        function finishTypewriter() {
+            clearInterval(typewriterInterval);
+            isTyping = false;
+            const rumiEl = document.getElementById('dialogue-rumi');
+            rumiEl.textContent = fullRumiText;
+            rumiEl.classList.remove('typing-cursor');
+            document.getElementById('btn-skip-text').classList.add('hidden');
+            document.getElementById('chibi-avatar-wrapper').className = 'chibi-float';
+        }
+
+        function startCaseTimer() {
+            clearInterval(timerInterval);
+            const timerBar = document.getElementById('timer-bar');
+            const timerText = document.getElementById('timer-text');
+
+            if (maxTimeSeconds === 0) {
+                timerBar.style.width = '100%';
+                timerText.textContent = 'Tanpa Had Masa';
+                return;
+            }
+
+            timeLeft = maxTimeSeconds;
+            timerBar.style.width = '100%';
+            timerBar.className = 'h-full rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 transition-all duration-100';
+            timerText.className = 'text-emerald-300 text-sm font-black';
+            timerText.textContent = `${timeLeft.toFixed(1)}s`;
+
+            let lastWholeSecond = Math.ceil(timeLeft);
+
+            timerInterval = setInterval(() => {
+                if (caseAnswered) {
+                    clearInterval(timerInterval);
+                    return;
+                }
+
+                timeLeft -= 0.1;
+                if (timeLeft <= 0) {
+                    timeLeft = 0;
+                    clearInterval(timerInterval);
+                    timerBar.style.width = '0%';
+                    timerText.textContent = '0.0s';
+                    handleTimeOut();
+                    return;
+                }
+
+                const pct = (timeLeft / maxTimeSeconds) * 100;
+                timerBar.style.width = `${pct}%`;
+                timerText.textContent = `${timeLeft.toFixed(1)}s`;
+
+                if (timeLeft <= 5) {
+                    timerBar.className = 'h-full rounded-full bg-gradient-to-r from-rose-600 to-amber-500 transition-all duration-100';
+                    timerText.className = 'text-rose-400 text-sm font-black animate-pulse';
+                    const wholeSec = Math.ceil(timeLeft);
+                    if (wholeSec < lastWholeSecond) {
+                        lastWholeSecond = wholeSec;
+                        playRPGAudio('warn');
+                    }
+                }
+            }, 100);
+        }
+
+        function handleTimeOut() {
+            if (caseAnswered) return;
+            caseAnswered = true;
+            finishTypewriter();
+
+            lives = Math.max(0, lives - 1);
+            combo = 0;
+            updateHUD();
+            playRPGAudio('wrong');
+
+            const stage = document.getElementById('dialogue-stage');
+            stage.classList.add('shake-box');
+            setTimeout(() => stage.classList.remove('shake-box'), 450);
+
+            highlightCorrectButton();
+            showAnalysisPanel(false, '⏱️ Masa Siasatan Tamat! (-1 Nyawa)');
+        }
+
+        function submitChoice(btnIndex, isCorrect) {
+            if (caseAnswered) return;
+            caseAnswered = true;
+            clearInterval(timerInterval);
+            finishTypewriter();
+
+            const chosenBtn = document.getElementById(`choice-btn-${btnIndex}`);
+            highlightCorrectButton();
+
+            if (isCorrect) {
+                correctCount++;
+                combo++;
+                if (combo > maxCombo) maxCombo = combo;
+
+                // Bonus kelajuan + bonus kombo
+                const speedBonus = maxTimeSeconds > 0 ? Math.round(timeLeft * 3) : 25;
+                const earned = 100 + speedBonus + (combo * 15);
+                score += earned;
+                updateHUD();
+                playRPGAudio('correct');
+
+                showToast(`⚔️ Analisis Tepat! +${earned} Mata (Kombo ${combo}x)`, 'success');
+                showAnalysisPanel(true, `✅ Keputusan Tepat! (+${earned} Mata)`);
+            } else {
+                chosenBtn.classList.remove('border-slate-700', 'bg-slate-900/95');
+                chosenBtn.classList.add('border-rose-500', 'bg-rose-950/80');
+
+                lives = Math.max(0, lives - 1);
+                combo = 0;
+                updateHUD();
+                playRPGAudio('wrong');
+
+                const stage = document.getElementById('dialogue-stage');
+                stage.classList.add('shake-box');
+                setTimeout(() => stage.classList.remove('shake-box'), 450);
+
+                showToast('❌ Keputusan Kurang Tepat! (-1 Nyawa)', 'error');
+                showAnalysisPanel(false, '❌ Keputusan Kurang Tepat! (-1 Nyawa)');
+            }
+        }
+
+        function highlightCorrectButton() {
+            const buttons = document.querySelectorAll('#choices-grid button');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                if (btn.getAttribute('onclick').includes('true')) {
+                    btn.classList.remove('border-slate-700', 'bg-slate-900/95');
+                    btn.classList.add('border-emerald-400', 'bg-emerald-950/80');
+                }
+            });
+        }
+
+        function showAnalysisPanel(isSuccess, headingText) {
+            const c = detectiveCases[currentCaseIndex];
+            const panel = document.getElementById('analysis-panel');
+            const icon = document.getElementById('analysis-icon');
+            const title = document.getElementById('analysis-title');
+            const jawiExp = document.getElementById('analysis-jawi');
+            const expText = document.getElementById('analysis-explanation');
+            const nextBtn = document.getElementById('btn-next-case');
+
+            panel.classList.remove('hidden');
+
+            if (isSuccess) {
+                panel.className = 'rounded-3xl p-5 sm:p-6 border-2 border-emerald-400/70 bg-gradient-to-br from-emerald-950/90 via-slate-900 to-cyan-950/80 shadow-2xl space-y-4';
+                icon.textContent = '🌊✅';
+            } else {
+                panel.className = 'rounded-3xl p-5 sm:p-6 border-2 border-rose-500/70 bg-gradient-to-br from-rose-950/90 via-slate-900 to-slate-950 shadow-2xl space-y-4';
+                icon.textContent = '⚠️🔍';
+            }
+
+            title.textContent = headingText;
+            jawiExp.textContent = c.jawiExplain;
+            expText.textContent = c.explanation;
+
+            if (lives <= 0) {
+                nextBtn.textContent = 'Lihat Keputusan Akhir 📊';
+            } else if (currentCaseIndex >= detectiveCases.length - 1) {
+                nextBtn.textContent = 'Tamatkan Misi Hashira 🏆';
+            } else {
+                nextBtn.textContent = `Fail Kes #${currentCaseIndex + 2} ➡️`;
+            }
+
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function nextCase() {
+            if (lives <= 0 || currentCaseIndex >= detectiveCases.length - 1) {
+                showFinalScreen();
+            } else {
+                loadCase(currentCaseIndex + 1);
+            }
+        }
+
+        function showFinalScreen() {
+            clearInterval(timerInterval);
+            document.getElementById('rpg-arena').classList.add('hidden');
+            const endScreen = document.getElementById('gameover-screen');
+            endScreen.classList.remove('hidden');
+
+            const trophy = document.getElementById('final-trophy');
+            const rankPill = document.getElementById('final-rank-pill');
+            const heading = document.getElementById('final-heading');
+            const summary = document.getElementById('final-summary');
+
+            document.getElementById('stat-correct').textContent = `${correctCount} / ${detectiveCases.length}`;
+            document.getElementById('stat-score').textContent = score;
+            document.getElementById('stat-max-combo').textContent = `${maxCombo}x`;
+
+            if (lives > 0 && correctCount >= 10) {
+                playRPGAudio('victory');
+                trophy.textContent = '👑🌊🏆';
+                rankPill.textContent = 'PANGKAT TERTINGGI: HASHIRA DETEKTIF WUDUK';
+                heading.textContent = 'Cemerlang! Anda Layak Menjadi Hashira!';
+                summary.textContent = 'Anda telah menguasai keseluruhan perkara makruh, perkara yang membatalkan wuduk, serta aplikasi KBAT Mahram dan keuzuran dengan cemerlang!';
+            } else if (lives > 0) {
+                playRPGAudio('victory');
+                trophy.textContent = '⚔️💧';
+                rankPill.textContent = 'PANGKAT: KINOE (PENYIASAT KANAN)';
+                heading.textContent = 'Syabas! Siasatan Berjaya Diselesaikan!';
+                summary.textContent = 'Anda berjaya menamatkan kesemua 12 fail kes siasatan wuduk. Cuba tingkatkan kelajuan dan kombo untuk meraih pangkat Hashira!';
+            } else {
+                trophy.textContent = '💔🔍';
+                rankPill.textContent = 'LATIHAN SEMULA KOR PEMBASMI IBLIS';
+                heading.textContent = 'Nyawa Detektif Telah Tamat!';
+                summary.textContent = 'Jangan berputus asa! Teliti semula perbezaan antara perkara Makruh (mengurangkan pahala) dan perkara yang Membatalkan Wuduk di halaman 100 buku teks.';
+            }
+        }
+    </script>
+</body>
+</html>
